@@ -1,5 +1,6 @@
 import json
 import re
+
 from google import genai
 from django.conf import settings
 
@@ -11,7 +12,7 @@ def analyze_report(title, description, category):
     prompt = f"""
 You are an expert civic issue analyst.
 
-Analyze this civic report.
+Analyze the following citizen report.
 
 Title:
 {title}
@@ -22,12 +23,24 @@ Category:
 Description:
 {description}
 
+Determine:
+
+1. Priority (High, Medium, Low)
+2. Severity Score (0-100)
+3. Confidence Score (0-100)
+4. Responsible Government Department
+5. One-sentence summary
+6. A short reason explaining your decision
+
 Return ONLY valid JSON.
 
 {{
-    "priority":"High",
-    "department":"Department Name",
-    "summary":"One sentence summary"
+    "priority": "High",
+    "severity_score": 95,
+    "confidence": 97,
+    "department": "Fire Department",
+    "summary": "An active structure fire has been reported inside a building requiring immediate emergency response.",
+    "reason": "The report describes an active emergency with immediate risk to life and property."
 }}
 """
 
@@ -37,6 +50,7 @@ Return ONLY valid JSON.
     )
 
     text = response.text.strip()
+
     text = re.sub(r"^```json", "", text)
     text = re.sub(r"```$", "", text)
     text = text.strip()

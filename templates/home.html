@@ -1,37 +1,51 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Civic AI</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-<h1>Civic AI</h1>
+{% block content %}
 
-<form method="POST" enctype="multipart/form-data">
+<div class="row justify-content-center">
 
-    {% csrf_token %}
+<div class="col-lg-8">
 
-    {{ form.as_p }}
+<div class="card shadow-lg">
 
-    <button type="submit">
-        Analyze Report
-    </button>
+<div class="card-header bg-primary text-white">
+
+<h2 class="mb-0">
+
+AI Powered Civic Reporting
+
+</h2>
+
+</div>
+
+<div class="card-body">
+
+<form method="POST"
+      enctype="multipart/form-data">
+
+{% csrf_token %}
+
+{{ form.as_p }}
+
+<div class="d-grid mt-4">
+
+<button
+class="btn btn-primary btn-lg">
+
+Analyze & Submit Report
+
+</button>
+
+</div>
 
 </form>
 
-{% if result %}
+</div>
 
-<hr>
+</div>
 
-<h2>AI Result</h2>
+</div>
 
-<p><b>Priority:</b> {{ result.priority }}</p>
+</div>
 
-<p><b>Department:</b> {{ result.department }}</p>
-
-<p><b>Summary:</b> {{ result.summary }}</p>
-
-{% endif %}
-
-</body>
-</html>
+{% endblock %}

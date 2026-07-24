@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+<div class="col-lg-8">
+
+<div class="card shadow">
+
+<div class="card-header bg-warning">
+
+<h2 class="mb-0">
+
+Track Your Report
+
+</h2>
+
+</div>
+
+<div class="card-body">
+
+<form method="POST">
+
+{% csrf_token %}
+
+<div class="input-group mb-4">
+
+<input
+type="text"
+name="tracking_code"
+class="form-control"
+placeholder="Enter Tracking Code"
+required>
+
+<button
+class="btn btn-primary">
+
+Track
+
+</button>
+
+</div>
+
+</form>
+
+{% if report %}
+
+<table class="table table-bordered">
+
+<tr>
+<th>Tracking Code</th>
+<td>{{ report.tracking_code }}</td>
+</tr>
+
+<tr>
+<th>Title</th>
+<td>{{ report.title }}</td>
+</tr>
+
+<tr>
+<th>Category</th>
+<td>{{ report.category }}</td>
+</tr>
+
+<tr>
+<th>Department</th>
+<td>{{ report.department }}</td>
+</tr>
+
+<tr>
+<th>Priority</th>
+
+<td>
+
+{% if report.priority == "High" %}
+<span class="badge bg-danger">High</span>
+
+{% elif report.priority == "Medium" %}
+<span class="badge bg-warning text-dark">Medium</span>
+
+{% else %}
+<span class="badge bg-success">Low</span>
+{% endif %}
+
+</td>
+
+</tr>
+
+<tr>
+<th>Status</th>
+
+<td>
+
+{% if report.status == "Pending" %}
+
+<span class="badge bg-warning text-dark">
+
+Pending
+
+</span>
+
+{% elif report.status == "In Progress" %}
+
+<span class="badge bg-primary">
+
+In Progress
+
+</span>
+
+{% else %}
+
+<span class="badge bg-success">
+
+Resolved
+
+</span>
+
+{% endif %}
+
+</td>
+
+</tr>
+
+<tr>
+
+<th>AI Summary</th>
+
+<td>
+
+{{ report.summary }}
+
+</td>
+
+</tr>
+
+</table>
+
+{% elif request.method == "POST" %}
+
+<div class="alert alert-danger">
+
+No report found.
+
+</div>
+
+{% endif %}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

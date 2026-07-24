@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-lg-8">
+
+        <div class="card shadow">
+
+            <div class="card-header bg-success text-white">
+
+                <h2 class="mb-0">
+                    ✅ Report Submitted Successfully
+                </h2>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="alert alert-success">
+
+                    <h4 class="mb-2">
+                        Tracking Code
+                    </h4>
+
+                    <h2 class="fw-bold text-primary">
+                        {{ report.tracking_code }}
+                    </h2>
+
+                </div>
+
+                {% if report.is_duplicate %}
+
+                <div class="alert alert-warning">
+
+                    <h4>
+                        <h3>DEBUG</h3>
+
+<p>Severity: {{ report.severity_score }}</p>
+
+<p>Confidence: {{ report.confidence }}</p>
+
+<p>Reason: {{ report.reason }}</p>
+                        ⚠ Possible Duplicate Detected
+                    </h4>
+
+                    <p class="mb-2">
+                        This report appears to be similar to a previously submitted report.
+                    </p>
+
+                    <strong>Similarity Score:</strong>
+                    {{ duplicate_result.score }}%
+
+                    <br>
+
+                    <strong>Matched Report:</strong>
+                    {{ report.duplicate_of.tracking_code }}
+
+                    <br><br>
+
+                    <small>
+                        Your report has still been submitted successfully and has been linked for government review.
+                    </small>
+
+                </div>
+
+                {% endif %}
+
+                <table class="table table-bordered">
+
+                    <tr>
+                        <th width="30%">Tracking Code</th>
+                        <td>{{ report.tracking_code }}</td>
+                    </tr>
+
+                    <tr>
+                        <th>Title</th>
+                        <td>{{ report.title }}</td>
+                    </tr>
+
+                    <tr>
+                        <th>Category</th>
+                        <td>{{ report.category }}</td>
+                    </tr>
+
+                    <tr>
+                        <th>Incident Location</th>
+                        <td>{{ report.location }}</td>
+                    </tr>
+
+                    <tr>
+
+                        <th>Priority</th>
+
+                        <td>
+
+                            {% if report.priority == "High" %}
+
+                            <span class="badge bg-danger">
+                                {{ report.priority }}
+                            </span>
+
+                            {% elif report.priority == "Medium" %}
+
+                            <span class="badge bg-warning text-dark">
+                                {{ report.priority }}
+                            </span>
+
+                            {% else %}
+
+                            <span class="badge bg-success">
+                                {{ report.priority }}
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <th>Severity Score</th>
+
+                        <td>
+
+                            <span class="badge bg-danger">
+                                {{ report.severity_score }}/100
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <th>AI Confidence</th>
+
+                        <td>
+
+                            <span class="badge bg-primary">
+                                {{ report.confidence }}%
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <th>Department</th>
+
+                        <td>
+
+                            {{ report.department }}
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <th>Status</th>
+
+                        <td>
+
+                            {% if report.status == "Pending" %}
+
+                            <span class="badge bg-warning text-dark">
+                                {{ report.status }}
+                            </span>
+
+                            {% elif report.status == "In Progress" %}
+
+                            <span class="badge bg-info">
+                                {{ report.status }}
+                            </span>
+
+                            {% else %}
+
+                            <span class="badge bg-success">
+                                {{ report.status }}
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <th>AI Summary</th>
+
+                        <td>
+
+                            {{ report.summary }}
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <th>AI Reason</th>
+
+                        <td>
+
+                            {{ report.reason }}
+
+                        </td>
+
+                    </tr>
+
+                </table>
+
+                <div class="d-grid">
+
+                    <a href="/"
+                       class="btn btn-primary">
+
+                        Submit Another Report
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
