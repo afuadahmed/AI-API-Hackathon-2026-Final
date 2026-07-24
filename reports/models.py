@@ -47,12 +47,10 @@ class Report(models.Model):
         blank=True,
     )
 
-    # NEW
     severity_score = models.IntegerField(
         default=0,
     )
 
-    # NEW
     confidence = models.IntegerField(
         default=0,
     )
@@ -66,7 +64,6 @@ class Report(models.Model):
         blank=True,
     )
 
-    # NEW
     reason = models.TextField(
         blank=True,
     )
@@ -105,3 +102,26 @@ class Report(models.Model):
 
     def __str__(self):
         return f"{self.tracking_code} - {self.title}"
+
+
+class ProgressLog(models.Model):
+
+    report = models.ForeignKey(
+        Report,
+        on_delete=models.CASCADE,
+        related_name="progress_logs",
+    )
+
+    message = models.CharField(
+        max_length=255,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    class Meta:
+        ordering = ["created_at"]
+
+    def __str__(self):
+        return f"{self.report.tracking_code} - {self.message}"

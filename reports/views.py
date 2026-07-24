@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 
 from .forms import CivicReportForm
-from .models import Report
+from .models import Report, ProgressLog
 from .services.ai_service import analyze_report
 from .services.duplicate_service import detect_duplicate
 
@@ -31,15 +31,38 @@ def home(request):
             report.summary = ai_result["summary"]
             report.reason = ai_result["reason"]
 
-            # Duplicate Detection (before saving)
+            # Duplicate Detection
             duplicate_result = detect_duplicate(report)
 
             if duplicate_result["duplicate"]:
                 report.is_duplicate = True
                 report.duplicate_of = duplicate_result["report"]
 
-            # Save report
+            # Save Report
             report.save()
+
+            # Progress History
+            ProgressLog.objects.create(
+                report=report,
+                message="Report submitted by citizen.",
+            )
+
+            ProgressLog.objects.create(
+                report=report,
+                message=f"AI analysis completed. Priority: {report.priority}.",
+            )
+
+            ProgressLog.objects.create(
+                report=report,
+                message=f"Assigned to {report.department}.",
+            )
+
+            if report.is_duplicate:
+
+                ProgressLog.objects.create(
+                    report=report,
+                    message=f"Potential duplicate linked to {report.duplicate_of.tracking_code}.",
+                )
 
             return render(
                 request,
@@ -66,15 +89,19 @@ def home(request):
 def track_report(request):
 
     report = None
+    logs = []
 
     if request.method == "POST":
 
         tracking_code = request.POST.get("tracking_code")
 
         try:
+
             report = Report.objects.get(
                 tracking_code=tracking_code
             )
+
+            logs = report.progress_logs.all()
 
         except Report.DoesNotExist:
 
@@ -85,6 +112,7 @@ def track_report(request):
         "tracking.html",
         {
             "report": report,
+            "logs": logs,
         },
     )
 
@@ -92,16 +120,27 @@ def track_report(request):
 def dashboard(request):
 
     search = request.GET.get("search", "")
+    status = request.GET.get("status", "")
+    category = request.GET.get("category", "")
+    priority = request.GET.get("priority", "")
 
     reports = Report.objects.all()
 
     if search:
-
         reports = reports.filter(
             Q(title__icontains=search)
             | Q(tracking_code__icontains=search)
             | Q(department__icontains=search)
         )
+
+    if status:
+        reports = reports.filter(status=status)
+
+    if category:
+        reports = reports.filter(category=category)
+
+    if priority:
+        reports = reports.filter(priority=priority)
 
     reports = reports.order_by("-created_at")
 
@@ -110,6 +149,9 @@ def dashboard(request):
         "reports": reports,
 
         "search": search,
+        "status": status,
+        "category": category,
+        "priority": priority,
 
         "total_reports": Report.objects.count(),
 
@@ -142,9 +184,37 @@ def update_status(request, report_id):
 
     if request.method == "POST":
 
-        report.status = request.POST.get("status")
+        new_status = request.POST.get("status")
 
-        report.save()
+        if report.status != new_status:
+
+            # Find the master/original report
+            master_report = report
+
+            if report.duplicate_of:
+                master_report = report.duplicate_of
+
+            # Update the master report
+            master_report.status = new_status
+            master_report.save()
+
+            ProgressLog.objects.create(
+                report=master_report,
+                message=f"Status updated to {new_status}.",
+            )
+
+            # Update every duplicate linked to the master
+            duplicates = master_report.duplicate_reports.all()
+
+            for duplicate in duplicates:
+
+                duplicate.status = new_status
+                duplicate.save()
+
+                ProgressLog.objects.create(
+                    report=duplicate,
+                    message=f"Status synchronized with master incident ({master_report.tracking_code}) to {new_status}.",
+                )
 
         return redirect("dashboard")
 

@@ -6,21 +6,118 @@
 
     <h2 class="mb-4">Government Dashboard</h2>
 
-    <form method="GET" class="mb-4">
+    <form method="GET" class="card shadow-sm p-3 mb-4">
 
-        <div class="input-group">
+        <div class="row g-2">
 
-            <input
-                type="text"
-                name="search"
-                class="form-control"
-                placeholder="Search by Tracking Code, Title or Department..."
-                value="{{ search }}"
-            >
+            <div class="col-md-4">
 
-            <button class="btn btn-primary" type="submit">
-                Search
-            </button>
+                <input
+                    type="text"
+                    name="search"
+                    class="form-control"
+                    placeholder="Search by Tracking Code, Title or Department..."
+                    value="{{ search }}">
+
+            </div>
+
+            <div class="col-md-2">
+
+                <select
+                    name="status"
+                    class="form-select">
+
+                    <option value="">All Status</option>
+
+                    <option value="Pending"
+                    {% if status == "Pending" %}selected{% endif %}>
+                        Pending
+                    </option>
+
+                    <option value="In Progress"
+                    {% if status == "In Progress" %}selected{% endif %}>
+                        In Progress
+                    </option>
+
+                    <option value="Resolved"
+                    {% if status == "Resolved" %}selected{% endif %}>
+                        Resolved
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="col-md-2">
+
+                <select
+                    name="category"
+                    class="form-select">
+
+                    <option value="">All Categories</option>
+
+                    <option value="Road"
+                    {% if category == "Road" %}selected{% endif %}>Road</option>
+
+                    <option value="Garbage"
+                    {% if category == "Garbage" %}selected{% endif %}>Garbage</option>
+
+                    <option value="Water"
+                    {% if category == "Water" %}selected{% endif %}>Water</option>
+
+                    <option value="Electricity"
+                    {% if category == "Electricity" %}selected{% endif %}>Electricity</option>
+
+                    <option value="Other"
+                    {% if category == "Other" %}selected{% endif %}>Other</option>
+
+                </select>
+
+            </div>
+
+            <div class="col-md-2">
+
+                <select
+                    name="priority"
+                    class="form-select">
+
+                    <option value="">All Priority</option>
+
+                    <option value="High"
+                    {% if priority == "High" %}selected{% endif %}>High</option>
+
+                    <option value="Medium"
+                    {% if priority == "Medium" %}selected{% endif %}>Medium</option>
+
+                    <option value="Low"
+                    {% if priority == "Low" %}selected{% endif %}>Low</option>
+
+                </select>
+
+            </div>
+
+            <div class="col-md-1 d-grid">
+
+                <button
+                    class="btn btn-primary">
+
+                    Apply
+
+                </button>
+
+            </div>
+
+            <div class="col-md-1 d-grid">
+
+                <a
+                    href="{% url 'dashboard' %}"
+                    class="btn btn-secondary">
+
+                    Reset
+
+                </a>
+
+            </div>
 
         </div>
 
@@ -90,6 +187,8 @@
                             <th>Tracking</th>
                             <th>Title</th>
                             <th>Priority</th>
+                            <th>Severity</th>
+                            <th>Confidence</th>
                             <th>Department</th>
                             <th>Status</th>
                             <th>Duplicate</th>
@@ -113,20 +212,34 @@
                         <td>
 
                             {% if report.priority == "High" %}
-                                <span class="badge bg-danger">
-                                    {{ report.priority }}
-                                </span>
+                                <span class="badge bg-danger">{{ report.priority }}</span>
 
                             {% elif report.priority == "Medium" %}
-                                <span class="badge bg-warning text-dark">
-                                    {{ report.priority }}
-                                </span>
+                                <span class="badge bg-warning text-dark">{{ report.priority }}</span>
 
                             {% else %}
-                                <span class="badge bg-success">
-                                    {{ report.priority }}
-                                </span>
+                                <span class="badge bg-success">{{ report.priority }}</span>
                             {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            <span class="badge bg-danger">
+
+                                {{ report.severity_score }}/100
+
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            <span class="badge bg-primary">
+
+                                {{ report.confidence }}%
+
+                            </span>
 
                         </td>
 
@@ -137,19 +250,25 @@
                             {% if report.status == "Pending" %}
 
                                 <span class="badge bg-warning text-dark">
+
                                     Pending
+
                                 </span>
 
                             {% elif report.status == "In Progress" %}
 
                                 <span class="badge bg-info">
+
                                     In Progress
+
                                 </span>
 
                             {% else %}
 
                                 <span class="badge bg-success">
+
                                     Resolved
+
                                 </span>
 
                             {% endif %}
@@ -161,13 +280,17 @@
                             {% if report.is_duplicate %}
 
                                 <span class="badge bg-danger">
+
                                     Yes
+
                                 </span>
 
                             {% else %}
 
                                 <span class="badge bg-success">
+
                                     No
+
                                 </span>
 
                             {% endif %}
@@ -210,7 +333,7 @@
 
                     <tr>
 
-                        <td colspan="8" class="text-center">
+                        <td colspan="10" class="text-center">
 
                             No reports found.
 

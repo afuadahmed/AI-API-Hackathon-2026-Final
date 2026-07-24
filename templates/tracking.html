@@ -46,10 +46,30 @@ Track
 
 {% if report %}
 
+{% if report.is_duplicate %}
+
+<div class="alert alert-warning">
+
+<h5>
+⚠ Possible Duplicate Report
+</h5>
+
+<p class="mb-0">
+
+This report has been linked to:
+
+<strong>{{ report.duplicate_of.tracking_code }}</strong>
+
+</p>
+
+</div>
+
+{% endif %}
+
 <table class="table table-bordered">
 
 <tr>
-<th>Tracking Code</th>
+<th width="30%">Tracking Code</th>
 <td>{{ report.tracking_code }}</td>
 </tr>
 
@@ -64,23 +84,39 @@ Track
 </tr>
 
 <tr>
-<th>Department</th>
-<td>{{ report.department }}</td>
+<th>Incident Location</th>
+<td>{{ report.location }}</td>
 </tr>
 
 <tr>
+<th>Submission Date</th>
+<td>{{ report.created_at }}</td>
+</tr>
+
+<tr>
+
 <th>Priority</th>
 
 <td>
 
 {% if report.priority == "High" %}
-<span class="badge bg-danger">High</span>
+
+<span class="badge bg-danger">
+{{ report.priority }}
+</span>
 
 {% elif report.priority == "Medium" %}
-<span class="badge bg-warning text-dark">Medium</span>
+
+<span class="badge bg-warning text-dark">
+{{ report.priority }}
+</span>
 
 {% else %}
-<span class="badge bg-success">Low</span>
+
+<span class="badge bg-success">
+{{ report.priority }}
+</span>
+
 {% endif %}
 
 </td>
@@ -88,6 +124,51 @@ Track
 </tr>
 
 <tr>
+
+<th>Severity Score</th>
+
+<td>
+
+<span class="badge bg-danger">
+
+{{ report.severity_score }}/100
+
+</span>
+
+</td>
+
+</tr>
+
+<tr>
+
+<th>AI Confidence</th>
+
+<td>
+
+<span class="badge bg-primary">
+
+{{ report.confidence }}%
+
+</span>
+
+</td>
+
+</tr>
+
+<tr>
+
+<th>Department</th>
+
+<td>
+
+{{ report.department }}
+
+</td>
+
+</tr>
+
+<tr>
+
 <th>Status</th>
 
 <td>
@@ -102,7 +183,7 @@ Pending
 
 {% elif report.status == "In Progress" %}
 
-<span class="badge bg-primary">
+<span class="badge bg-info">
 
 In Progress
 
@@ -134,7 +215,67 @@ Resolved
 
 </tr>
 
+<tr>
+
+<th>AI Reason</th>
+
+<td>
+
+{{ report.reason }}
+
+</td>
+
+</tr>
+
 </table>
+
+<div class="card mt-4">
+
+<div class="card-header bg-dark text-white">
+
+<h5 class="mb-0">
+
+Progress History
+
+</h5>
+
+</div>
+
+<div class="card-body">
+
+{% if logs %}
+
+<ul class="list-group">
+
+{% for log in logs %}
+
+<li class="list-group-item">
+
+<strong>
+
+{{ log.created_at }}
+
+</strong>
+
+<br>
+
+{{ log.message }}
+
+</li>
+
+{% endfor %}
+
+</ul>
+
+{% else %}
+
+<p>No progress updates yet.</p>
+
+{% endif %}
+
+</div>
+
+</div>
 
 {% elif request.method == "POST" %}
 

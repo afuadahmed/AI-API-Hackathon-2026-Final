@@ -2,9 +2,7 @@
 
 {% block content %}
 
-<div class="row justify-content-center">
-
-<div class="col-lg-6">
+<div class="container mt-4">
 
 <div class="card shadow">
 
@@ -12,7 +10,7 @@
 
 <h3 class="mb-0">
 
-Update Report Status
+Report Details & Management
 
 </h3>
 
@@ -20,29 +18,161 @@ Update Report Status
 
 <div class="card-body">
 
-<h4>{{ report.title }}</h4>
+<div class="row">
 
-<p>
+<div class="col-md-8">
 
-<strong>Tracking Code:</strong>
+<table class="table table-bordered">
 
-{{ report.tracking_code }}
+<tr>
+<th width="30%">Tracking Code</th>
+<td>{{ report.tracking_code }}</td>
+</tr>
 
-</p>
+<tr>
+<th>Title</th>
+<td>{{ report.title }}</td>
+</tr>
+
+<tr>
+<th>Description</th>
+<td>{{ report.description }}</td>
+</tr>
+
+<tr>
+<th>Category</th>
+<td>{{ report.category }}</td>
+</tr>
+
+<tr>
+<th>Location</th>
+<td>{{ report.location }}</td>
+</tr>
+
+<tr>
+<th>Priority</th>
+<td>
+
+{% if report.priority == "High" %}
+<span class="badge bg-danger">{{ report.priority }}</span>
+
+{% elif report.priority == "Medium" %}
+<span class="badge bg-warning text-dark">{{ report.priority }}</span>
+
+{% else %}
+<span class="badge bg-success">{{ report.priority }}</span>
+{% endif %}
+
+</td>
+</tr>
+
+<tr>
+<th>Severity Score</th>
+<td>{{ report.severity_score }}/100</td>
+</tr>
+
+<tr>
+<th>AI Confidence</th>
+<td>{{ report.confidence }}%</td>
+</tr>
+
+<tr>
+<th>Department</th>
+<td>{{ report.department }}</td>
+</tr>
+
+<tr>
+<th>Status</th>
+<td>
+
+{% if report.status == "Pending" %}
+<span class="badge bg-warning text-dark">{{ report.status }}</span>
+
+{% elif report.status == "In Progress" %}
+<span class="badge bg-info">{{ report.status }}</span>
+
+{% else %}
+<span class="badge bg-success">{{ report.status }}</span>
+{% endif %}
+
+</td>
+</tr>
+
+<tr>
+<th>AI Summary</th>
+<td>{{ report.summary }}</td>
+</tr>
+
+<tr>
+<th>AI Reason</th>
+<td>{{ report.reason }}</td>
+</tr>
+
+{% if report.is_duplicate %}
+
+<tr>
+<th>Duplicate Report</th>
+<td>
+
+<span class="badge bg-danger">
+
+Linked to {{ report.duplicate_of.tracking_code }}
+
+</span>
+
+</td>
+</tr>
+
+{% endif %}
+
+<tr>
+<th>Submitted</th>
+<td>{{ report.created_at|date:"d M Y, h:i A" }}</td>
+</tr>
+
+</table>
+
+</div>
+
+<div class="col-md-4">
+
+{% if report.image %}
+
+<h5>Uploaded Image</h5>
+
+<img
+src="{{ report.image.url }}"
+class="img-fluid rounded border">
+
+{% else %}
+
+<div class="alert alert-secondary">
+
+No image uploaded.
+
+</div>
+
+{% endif %}
+
+</div>
+
+</div>
+
+<hr>
+
+<h4 class="mb-3">
+
+Update Report Status
+
+</h4>
 
 <form method="POST">
 
 {% csrf_token %}
 
-<label class="form-label">
-
-Status
-
-</label>
-
 <select
-class="form-select"
-name="status">
+name="status"
+class="form-select">
 
 <option value="Pending"
 {% if report.status == "Pending" %}selected{% endif %}>
@@ -67,12 +197,11 @@ Resolved
 
 </select>
 
-<div class="d-grid mt-4">
+<div class="d-grid mt-3">
 
-<button
-class="btn btn-success">
+<button class="btn btn-success">
 
-Save Changes
+Save Status
 
 </button>
 
@@ -80,7 +209,43 @@ Save Changes
 
 </form>
 
-</div>
+<hr>
+
+<h4>
+
+Progress History
+
+</h4>
+
+<ul class="list-group">
+
+{% for log in report.progress_logs.all %}
+
+<li class="list-group-item">
+
+<strong>
+
+{{ log.created_at|date:"d M Y, h:i A" }}
+
+</strong>
+
+<br>
+
+{{ log.message }}
+
+</li>
+
+{% empty %}
+
+<li class="list-group-item">
+
+No history available.
+
+</li>
+
+{% endfor %}
+
+</ul>
 
 </div>
 
