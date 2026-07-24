@@ -12,11 +12,16 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY
-SECRET_KEY = "django-insecure-change-this-later"
+SECRET_KEY = os.getenv(
+    "SECRET_KEY",
+    "django-insecure-change-this-later",
+)
 
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "*",
+]
 
 # Gemini API
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
