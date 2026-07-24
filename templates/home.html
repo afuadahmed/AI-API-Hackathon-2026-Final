@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Civic AI</title>
+</head>
+<body>
+
+<h1>Civic AI</h1>
+
+<form method="POST" enctype="multipart/form-data">
+
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button type="submit">
+        Analyze Report
+    </button>
+
+</form>
+
+{% if result %}
+
+<hr>
+
+<h2>AI Result</h2>
+
+<p><b>Priority:</b> {{ result.priority }}</p>
+
+<p><b>Department:</b> {{ result.department }}</p>
+
+<p><b>Summary:</b> {{ result.summary }}</p>
+
+{% endif %}
+
+</body>
+</html>
